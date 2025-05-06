@@ -1,5 +1,6 @@
 services:
   coral:
     build: .
+    platform: linux/amd64
     volumes:
       - ./:/coral
