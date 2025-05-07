@@ -16,6 +16,12 @@ RUN make install
 
 RUN python3 -m pip install lovis4u
 
+RUN mkdir /lovis4u
+WORKDIR /lovis4u
+RUN lovis4u --data
+RUN lovis4u -smp mmseqs
+RUN lovis4u --get-hmms
+
 RUN mkdir /coral
 WORKDIR /coral
 COPY . .
