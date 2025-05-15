@@ -28,7 +28,7 @@ RUN tar xzf diamond-linux64.tar.gz
 RUN ln -sf /diamond/diamond /usr/local/bin/
 
 # install SCIP solver
-RUN conda install --c conda-forge pyscipopt
+RUN conda install --channel conda-forge pyscipopt
 
 # install CarveMe
 RUN pip install carveme
