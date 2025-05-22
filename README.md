@@ -6,16 +6,17 @@ Follow instruction here to download a local copy of InterProScan as a Docker ima
 
 https://hub.docker.com/r/interpro/interproscan
 
-Then you can run it, e.g.
+Then you can run InterProScan on your favorite protein sequences, e.g.
 
 ```
 docker run --rm \
   -v $PWD/interproscan-5.74-105.0/data:/opt/interproscan/data \
-  -v $PWD:/work
+  -v $PWD:/work \
   interpro/interproscan:5.74-105.0 \
   --input /work/<proteins.faa> \
   --output-dir /work/outputs \
-  --cpu 4
+  --cpu 4 \
+  --appl Pfam
 ```
 
 ### LoVis4U
