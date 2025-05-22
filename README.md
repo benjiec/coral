@@ -1,4 +1,6 @@
-# InterPro
+## Third Party Tools
+
+### InterPro
 
 Follow instruction here to download a local copy of InterProScan as a Docker image.
 
@@ -16,7 +18,7 @@ docker run --rm \
   --cpu 4
 ```
 
-# LoVis4U
+### LoVis4U
 
 LoVis4U is a pipeline for comparing bacterial genomes. It clusters proteins
 from genomes into clusters, annotate them, then draw them on a PDF. To make it
