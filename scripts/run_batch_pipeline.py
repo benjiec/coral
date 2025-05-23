@@ -1,5 +1,7 @@
 import os
 import sys
+import shutil
+import traceback
 from coral.ncbi.download import download_and_extract_prot_fasta
 from coral.ncbi.taxonomy import fetch_and_append_taxonomy
 from coral.interpro.exec import run_interproscan
@@ -13,14 +15,16 @@ os.makedirs(OUTPUTS_DIR, exist_ok=True)
 os.makedirs(INTERPRO_OUTPUTS, exist_ok=True)
 
 def main():
-    if len(sys.argv) != 2:
-        print(f"Usage: python {sys.argv[0]} <accession_list_file>", file=sys.stderr)
-        sys.exit(1)
-    accessions_file = sys.argv[1]
+    import argparse
+    parser = argparse.ArgumentParser(description="Batch InterProScan pipeline")
+    parser.add_argument('accessions_file', help='File with list of accessions')
+    parser.add_argument('--skip-interpro', action='store_true', help='Skip running InterProScan and use existing outputs')
+    args = parser.parse_args()
+
     errors = []
     processed = 0
     warnings = []
-    with open(accessions_file) as f:
+    with open(args.accessions_file) as f:
         accessions = [line.strip() for line in f if line.strip() and not line.startswith('#')]
     for accession in accessions:
         try:
@@ -33,17 +37,25 @@ def main():
                 print(warning, file=sys.stderr)
                 warnings.append((accession, str(fnf)))
                 continue
-            # Step 2: Run InterProScan
-            tsv_path, json_path = run_interproscan(fasta_path, accession, INTERPRO_OUTPUTS)
-            # Step 3: Update TSV in place
-            add_header_to_tsv(tsv_path)
-            add_accession_column(tsv_path, accession)
-            add_missing_sequences(tsv_path, fasta_path, accession)
+            # Step 2: Run InterProScan or skip
+            if args.skip_interpro:
+                print(f"Skipping InterProScan for {accession}, using existing outputs.")
+                tsv_path = os.path.join(INTERPRO_OUTPUTS, f"{accession}.tsv")
+                json_path = os.path.join(INTERPRO_OUTPUTS, f"{accession}.json")
+            else:
+                tsv_path, json_path = run_interproscan(fasta_path, accession, INTERPRO_OUTPUTS)
+            # Step 3: Copy TSV to outputs and update
+            out_tsv = os.path.join(OUTPUTS_DIR, f"{accession}.tsv")
+            shutil.copy(tsv_path, out_tsv)
+            add_header_to_tsv(out_tsv)
+            add_accession_column(out_tsv, accession)
+            add_missing_sequences(out_tsv, fasta_path, accession)
             # Step 4: Fetch taxonomy
             fetch_and_append_taxonomy(accession, TAXONOMY_TXT)
             processed += 1
         except Exception as e:
             print(f"Error processing {accession}: {e}", file=sys.stderr)
+            traceback.print_exc()
             errors.append((accession, str(e)))
     print(f"\nProcessed {processed} accessions. {len(errors)} errors. {len(warnings)} warnings.")
     if errors:

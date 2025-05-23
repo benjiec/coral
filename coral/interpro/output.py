@@ -59,7 +59,10 @@ def add_missing_sequences(tsv_path: str, fasta_path: str, accession: str):
         seq_col = 0
     if acc_col is None:
         acc_col = len(header) - 1
-    present_ids = set(row[seq_col] for row in reader[1:])
+    present_ids = set(
+        row[seq_col] for row in reader[1:]
+        if isinstance(row, list) and len(row) > seq_col
+    )
     missing = seq_ids - present_ids
     for seq_id in missing:
         row = [''] * len(header)
