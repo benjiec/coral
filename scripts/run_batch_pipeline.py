@@ -9,10 +9,24 @@ from coral.interpro.output import add_header_to_tsv, add_accession_column, add_m
 
 OUTPUTS_DIR = 'outputs'
 INTERPRO_OUTPUTS = 'interpro_outputs'
-TAXONOMY_TXT = os.path.join(OUTPUTS_DIR, 'taxonomy.txt')
+TAXONOMY_TSV = os.path.join(OUTPUTS_DIR, 'taxonomy.tsv')
 
 os.makedirs(OUTPUTS_DIR, exist_ok=True)
 os.makedirs(INTERPRO_OUTPUTS, exist_ok=True)
+
+def cleanup_intermediate_files(accession: str, output_dir: str):
+    """Clean up all intermediate files for a given accession."""
+    # Remove NCBI intermediate files
+    extract_dir = os.path.join(output_dir, accession)
+    zip_path = os.path.join(output_dir, f"{accession}.zip")
+    fasta_path = os.path.join(output_dir, f"{accession}.faa")
+    
+    if os.path.exists(extract_dir):
+        shutil.rmtree(extract_dir)
+    if os.path.exists(zip_path):
+        os.remove(zip_path)
+    if os.path.exists(fasta_path):
+        os.remove(fasta_path)
 
 def main():
     import argparse
@@ -37,6 +51,7 @@ def main():
                 print(warning, file=sys.stderr)
                 warnings.append((accession, str(fnf)))
                 continue
+            
             # Step 2: Run InterProScan or skip
             if args.skip_interpro:
                 print(f"Skipping InterProScan for {accession}, using existing outputs.")
@@ -44,19 +59,28 @@ def main():
                 json_path = os.path.join(INTERPRO_OUTPUTS, f"{accession}.json")
             else:
                 tsv_path, json_path = run_interproscan(fasta_path, accession, INTERPRO_OUTPUTS)
+            
             # Step 3: Copy TSV to outputs and update
             out_tsv = os.path.join(OUTPUTS_DIR, f"{accession}.tsv")
             shutil.copy(tsv_path, out_tsv)
             add_header_to_tsv(out_tsv)
             add_accession_column(out_tsv, accession)
             add_missing_sequences(out_tsv, fasta_path, accession)
+            
             # Step 4: Fetch taxonomy
-            fetch_and_append_taxonomy(accession, TAXONOMY_TXT)
+            fetch_and_append_taxonomy(accession, TAXONOMY_TSV)
             processed += 1
+            
+            # Clean up all intermediate files
+            cleanup_intermediate_files(accession, OUTPUTS_DIR)
+            
         except Exception as e:
             print(f"Error processing {accession}: {e}", file=sys.stderr)
             traceback.print_exc()
             errors.append((accession, str(e)))
+            # Clean up even if there was an error
+            cleanup_intermediate_files(accession, OUTPUTS_DIR)
+            
     print(f"\nProcessed {processed} accessions. {len(errors)} errors. {len(warnings)} warnings.")
     if errors:
         print("Errors:")
