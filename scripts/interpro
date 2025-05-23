@@ -6,6 +6,7 @@ docker run --rm \
   -v $PWD/interproscan-5.74-105.0/data:/opt/interproscan/data \
   -v $PWD:/work \
   interpro/interproscan:5.74-105.0 \
+  --formats TSV \
   --cpu 4 \
   --appl Pfam \
   --input /work/$1 \
