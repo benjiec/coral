@@ -8,7 +8,7 @@ from coral.interpro.output import add_header_to_tsv, add_accession_column, add_m
 ACCESSIONS_FILE = 'data/accessions.txt'
 OUTPUTS_DIR = 'outputs'
 INTERPRO_OUTPUTS = 'interpro_outputs'
-TAXONOMY_TXT = os.path.join(OUTPUTS_DIR, 'taxonomy.tsv')
+TAXONOMY_TXT = os.path.join(OUTPUTS_DIR, 'taxonomy.txt')
 
 os.makedirs(OUTPUTS_DIR, exist_ok=True)
 os.makedirs(INTERPRO_OUTPUTS, exist_ok=True)
@@ -25,7 +25,7 @@ def main():
             # Step 1: Download FASTA
             fasta_path = download_and_extract_prot_fasta(accession, OUTPUTS_DIR)
             # Step 2: Run InterProScan
-            tsv_path, json_path = run_interproscan(fasta_path)
+            tsv_path, json_path = run_interproscan(fasta_path, INTERPRO_OUTPUTS)
             # Step 3: Copy TSV to outputs and update
             out_tsv = os.path.join(OUTPUTS_DIR, f"{accession}.tsv")
             with open(tsv_path) as src, open(out_tsv, 'w') as dst:
