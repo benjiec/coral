@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # NCBI Datasets v2alpha Download Script
-# Downloads protein FASTA and GFF files for a list of genome accessions
+# Downloads DNA and protein FASTA and GFF files for a list of genome accessions
 
 # Configuration
 BASE_URL="https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession"
-ANNOTATION_TYPES="PROT_FASTA,GENOME_GFF"
+ANNOTATION_TYPES="GENOME_FASTA,PROT_FASTA,GENOME_GFF"
 OUTPUT_DIR="ncbi-downloads"
 DELAY=1  # Delay between requests (seconds) to be respectful to NCBI servers
 
