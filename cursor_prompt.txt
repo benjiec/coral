@@ -1,0 +1,26 @@
+I would like to build a pipeline to run multiple protein FASTA files through an
+application, then update the TSV output of the application to include a header
+row. This work can be broken down into the following steps.
+
+1) Write a script that given a NCBI genome accession ID, download the
+PROT_FASTA format file from NCBI.
+
+2) Run that file through InterProScan (scripts/interpro), which writes a set of
+output files in the `interpro_outputs/` directory, one of which is a TSV file,
+and one of which is a JSON file. The TSV and JSON files contain the same result
+just in different formats.
+
+3) Make a copy of the TSV file, and update the copy to include a header, where
+the column names can be inferred from the JSON file.
+
+4) Update the copied TSV file to include a column for the accession number of
+the genome. The accession number should be the argument from step 1.
+
+5) Update the copied TSV file to include a line for each sequence in the FASTA
+input to InterProScan but didn't have an output.
+
+6) Fetch the taxonomy information for the genome accession, and append it to a
+taxonomy.txt file, include order, class, family, species name, and accession.
+
+7) Write a script that runs steps 1 through 6, for each accession in
+data/accessions.txt file.
