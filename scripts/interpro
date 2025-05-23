@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo $1
+docker run --rm \
+  -v $PWD/interproscan-5.74-105.0/data:/opt/interproscan/data \
+  -v $PWD:/work \
+  interpro/interproscan:5.74-105.0 \
+  --output-dir /work/outputs \
+  --cpu 4 \
+  --appl Pfam \
+  --input /work/$1

@@ -6,18 +6,10 @@ Follow instruction here to download a local copy of InterProScan as a Docker ima
 
 https://hub.docker.com/r/interpro/interproscan
 
-Then you can run InterProScan on your favorite protein sequences, e.g.
+Then you can run InterProScan on your favorite protein sequences using
+```scripts/interpro```. This script runs InterProScan on Pfam in a Docker
+container.
 
-```
-docker run --rm \
-  -v $PWD/interproscan-5.74-105.0/data:/opt/interproscan/data \
-  -v $PWD:/work \
-  interpro/interproscan:5.74-105.0 \
-  --input /work/<proteins.faa> \
-  --output-dir /work/outputs \
-  --cpu 4 \
-  --appl Pfam
-```
 
 ### LoVis4U
 
@@ -27,12 +19,13 @@ work for eukaryotes we need to split a single GFF with multiple fragments into
 separate GFFs first.
 
 1. Split GFF files into smaller GFF files, each containing just one sequence's
-features and FASTA, using ```coral/utils/split_gff_by_sequence.py```.
+features and FASTA, using a script that calls
+```coral/utils/split_gff_by_sequence.py```.
 
 2. Run LoVis4U pipeline:
 ```lovis4u -gff /coral/data/gff -hl --set-category-colour -c A4p2 --run-hmmscan```
 
-3. Run ```python3 scripts/extract_gff_info.py``` to generate a
+3. Run ```python3 coral/utils/extract_gff_info.py``` to generate a
 ```gff_summary.tsv``` file.
 
 4. The following sets of CSVs can be used in Tableau, see tableau/ for workbook
