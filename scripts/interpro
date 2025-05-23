@@ -1,3 +1,5 @@
+# takes in an accession filename and the name of the output directory
+
 #!/bin/bash
 
 echo $1
@@ -5,7 +7,7 @@ docker run --rm \
   -v $PWD/interproscan-5.74-105.0/data:/opt/interproscan/data \
   -v $PWD:/work \
   interpro/interproscan:5.74-105.0 \
-  --output-dir /work/interpro_outputs \
+  --output-dir /work/$2 \
   --cpu 4 \
   --appl Pfam \
   --input /work/$1

@@ -1,6 +1,14 @@
 import requests
+import os
 
 def fetch_and_append_taxonomy(accession: str, taxonomy_txt: str):
+    # Remove old line with same accession if exists
+    if os.path.exists(taxonomy_txt):
+        with open(taxonomy_txt, 'r') as f:
+            lines = f.readlines()
+        lines = [line for line in lines if not line.rstrip().endswith(f'\t{accession}') and not line.rstrip().endswith(f'{accession}')]
+        with open(taxonomy_txt, 'w') as f:
+            f.writelines(lines)
     url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=assembly&term={accession}&retmode=json"
     r = requests.get(url)
     r.raise_for_status()

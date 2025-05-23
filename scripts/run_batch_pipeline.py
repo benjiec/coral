@@ -8,7 +8,7 @@ from coral.interpro.output import add_header_to_tsv, add_accession_column, add_m
 ACCESSIONS_FILE = 'data/accessions.txt'
 OUTPUTS_DIR = 'outputs'
 INTERPRO_OUTPUTS = 'interpro_outputs'
-TAXONOMY_TXT = os.path.join(OUTPUTS_DIR, 'taxonomy.txt')
+TAXONOMY_TXT = os.path.join(OUTPUTS_DIR, 'taxonomy.tsv')
 
 os.makedirs(OUTPUTS_DIR, exist_ok=True)
 os.makedirs(INTERPRO_OUTPUTS, exist_ok=True)
