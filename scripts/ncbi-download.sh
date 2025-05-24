@@ -25,12 +25,13 @@ print_status() {
 
 # Function to show usage
 show_usage() {
-    echo "Usage: $0 [OPTIONS] <accession_file>"
+    echo "Usage: $0 [OPTIONS] <accession_file|accession_id>"
     echo ""
     echo "Downloads protein FASTA and GFF files from NCBI Datasets API v2alpha"
     echo ""
     echo "Arguments:"
     echo "  accession_file    File containing one genome accession per line (e.g., GCF_000001405.40)"
+    echo "  accession_id      A single genome accession ID (e.g., GCF_000001405.40)"
     echo ""
     echo "Options:"
     echo "  -o, --output DIR     Output directory (default: ncbi_downloads)"
@@ -43,8 +44,9 @@ show_usage() {
     echo "  GENOME_FASTA, PROT_FASTA, RNA_FASTA, CDS_FASTA,"
     echo "  GENOME_GFF, GENOME_GBFF, GENOME_GTF, SEQUENCE_REPORT"
     echo ""
-    echo "Example:"
+    echo "Examples:"
     echo "  $0 -o my_genomes -t PROT_FASTA,GENOME_GFF accessions.txt"
+    echo "  $0 -o my_genomes GCF_000001405.40"
 }
 
 # Parse command line arguments
@@ -83,111 +85,119 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Check if accession file is provided
+# Check if accession file or ID is provided
 if [[ -z "$ACCESSION_FILE" ]]; then
-    print_status "$RED" "Error: Accession file is required"
+    print_status "$RED" "Error: Accession file or ID is required"
     show_usage
     exit 1
 fi
 
-# Check if accession file exists
-if [[ ! -f "$ACCESSION_FILE" ]]; then
-    print_status "$RED" "Error: Accession file '$ACCESSION_FILE' not found"
-    exit 1
-fi
-
-# Create output directory
-mkdir -p "$OUTPUT_DIR"
-if [[ $? -ne 0 ]]; then
-    print_status "$RED" "Error: Could not create output directory '$OUTPUT_DIR'"
-    exit 1
-fi
-
-# Check for required tools
-for tool in curl unzip; do
-    if ! command -v $tool &> /dev/null; then
-        print_status "$RED" "Error: $tool is required but not installed"
+# If argument is a file, use while-read loop; otherwise, process as single accession
+if [[ -f "$ACCESSION_FILE" ]]; then
+    mkdir -p "$OUTPUT_DIR"
+    if [[ $? -ne 0 ]]; then
+        print_status "$RED" "Error: Could not create output directory '$OUTPUT_DIR'"
         exit 1
     fi
-done
-
-# Count total accessions
-TOTAL_ACCESSIONS=$(wc -l < "$ACCESSION_FILE")
-print_status "$BLUE" "Starting download of $TOTAL_ACCESSIONS genome(s)"
-print_status "$BLUE" "Output directory: $OUTPUT_DIR"
-print_status "$BLUE" "Annotation types: $ANNOTATION_TYPES"
-print_status "$BLUE" "Delay between requests: ${DELAY}s"
-
-# Initialize counters
-SUCCESS_COUNT=0
-FAILED_COUNT=0
-CURRENT=0
-
-# Read accessions and process each one
-while IFS= read -r accession || [[ -n "$accession" ]]; do
-    # Skip empty lines and comments
-    [[ -z "$accession" || "$accession" =~ ^[[:space:]]*# ]] && continue
-    
-    # Remove whitespace
-    accession=$(echo "$accession" | xargs)
-    
-    ((CURRENT++))
-    
-    print_status "$YELLOW" "[$CURRENT/$TOTAL_ACCESSIONS] Processing: $accession"
-    
-    # Create URL
+    TOTAL_ACCESSIONS=$(grep -cv '^\s*#' "$ACCESSION_FILE" | grep -cv '^\s*$')
+    print_status "$BLUE" "Starting download of $TOTAL_ACCESSIONS genome(s)"
+    print_status "$BLUE" "Output directory: $OUTPUT_DIR"
+    print_status "$BLUE" "Annotation types: $ANNOTATION_TYPES"
+    print_status "$BLUE" "Delay between requests: ${DELAY}s"
+    SUCCESS_COUNT=0
+    FAILED_COUNT=0
+    CURRENT=0
+    while IFS= read -r accession || [[ -n "$accession" ]]; do
+        # Skip empty lines and comments
+        [[ -z "$accession" || "$accession" =~ ^[[:space:]]*# ]] && continue
+        accession=$(echo "$accession" | xargs)
+        ((CURRENT++))
+        print_status "$YELLOW" "[$CURRENT/$TOTAL_ACCESSIONS] Processing: $accession"
+        URL="${BASE_URL}/${accession}/download?include_annotation_type=${ANNOTATION_TYPES}"
+        ZIP_FILE="${OUTPUT_DIR}/${accession}.zip"
+        EXTRACT_DIR="${OUTPUT_DIR}/${accession}"
+        print_status "$BLUE" "Downloading: $accession"
+        HTTP_CODE=$(curl -w "%{http_code}" -s -L "$URL" -o "$ZIP_FILE" --connect-timeout 30 --max-time 300)
+        CURL_EXIT_STATUS=$?
+        if [[ $CURL_EXIT_STATUS -eq 0 && "$HTTP_CODE" == "200" ]]; then
+            if [[ -s "$ZIP_FILE" ]]; then
+                print_status "$GREEN" "Downloaded successfully: $accession"
+                print_status "$BLUE" "Extracting: $accession"
+                mkdir -p "$EXTRACT_DIR"
+                if unzip -q "$ZIP_FILE" -d "$EXTRACT_DIR"; then
+                    print_status "$GREEN" "Extracted successfully: $accession"
+                    if [[ "$KEEP_ZIP" == false ]]; then
+                        rm "$ZIP_FILE"
+                    fi
+                    ((SUCCESS_COUNT++))
+                else
+                    print_status "$RED" "Failed to extract: $accession"
+                    rm -rf "$EXTRACT_DIR"
+                    ((FAILED_COUNT++))
+                fi
+            else
+                print_status "$RED" "Downloaded file is empty or corrupted: $accession"
+                rm -f "$ZIP_FILE"
+                ((FAILED_COUNT++))
+            fi
+        else
+            print_status "$RED" "Failed to download: $accession (HTTP: $HTTP_CODE)"
+            rm -f "$ZIP_FILE"
+            ((FAILED_COUNT++))
+        fi
+        if [[ $CURRENT -lt $TOTAL_ACCESSIONS ]]; then
+            sleep "$DELAY"
+        fi
+    done < "$ACCESSION_FILE"
+else
+    mkdir -p "$OUTPUT_DIR"
+    if [[ $? -ne 0 ]]; then
+        print_status "$RED" "Error: Could not create output directory '$OUTPUT_DIR'"
+        exit 1
+    fi
+    TOTAL_ACCESSIONS=1
+    print_status "$BLUE" "Starting download of $TOTAL_ACCESSIONS genome(s)"
+    print_status "$BLUE" "Output directory: $OUTPUT_DIR"
+    print_status "$BLUE" "Annotation types: $ANNOTATION_TYPES"
+    print_status "$BLUE" "Delay between requests: ${DELAY}s"
+    SUCCESS_COUNT=0
+    FAILED_COUNT=0
+    CURRENT=1
+    accession=$(echo "$ACCESSION_FILE" | xargs)
+    print_status "$YELLOW" "[1/1] Processing: $accession"
     URL="${BASE_URL}/${accession}/download?include_annotation_type=${ANNOTATION_TYPES}"
-    
-    # Set output filename
     ZIP_FILE="${OUTPUT_DIR}/${accession}.zip"
     EXTRACT_DIR="${OUTPUT_DIR}/${accession}"
-    
-    # Download with curl
     print_status "$BLUE" "Downloading: $accession"
-    
-    # Use curl with error handling
     HTTP_CODE=$(curl -w "%{http_code}" -s -L "$URL" -o "$ZIP_FILE" --connect-timeout 30 --max-time 300)
-    
-    if [[ $? -eq 0 && "$HTTP_CODE" == "200" ]]; then
-        # Check if file was actually downloaded and is not empty
+    CURL_EXIT_STATUS=$?
+    if [[ $CURL_EXIT_STATUS -eq 0 && "$HTTP_CODE" == "200" ]]; then
         if [[ -s "$ZIP_FILE" ]]; then
             print_status "$GREEN" "Downloaded successfully: $accession"
-            
-            # Extract the zip file
             print_status "$BLUE" "Extracting: $accession"
             mkdir -p "$EXTRACT_DIR"
-            
             if unzip -q "$ZIP_FILE" -d "$EXTRACT_DIR"; then
                 print_status "$GREEN" "Extracted successfully: $accession"
-                
-                # Remove zip file unless --keep-zip is specified
                 if [[ "$KEEP_ZIP" == false ]]; then
                     rm "$ZIP_FILE"
                 fi
-                
                 ((SUCCESS_COUNT++))
             else
                 print_status "$RED" "Failed to extract: $accession"
-                rm -rf "$EXTRACT_DIR"  # Clean up failed extraction
+                rm -rf "$EXTRACT_DIR"
                 ((FAILED_COUNT++))
             fi
         else
             print_status "$RED" "Downloaded file is empty or corrupted: $accession"
-            rm -f "$ZIP_FILE"  # Remove empty file
+            rm -f "$ZIP_FILE"
             ((FAILED_COUNT++))
         fi
     else
         print_status "$RED" "Failed to download: $accession (HTTP: $HTTP_CODE)"
-        rm -f "$ZIP_FILE"  # Remove any partial download
+        rm -f "$ZIP_FILE"
         ((FAILED_COUNT++))
     fi
-    
-    # Add delay between requests (except for the last one)
-    if [[ $CURRENT -lt $TOTAL_ACCESSIONS ]]; then
-        sleep "$DELAY"
-    fi
-    
-done < "$ACCESSION_FILE"
+fi
 
 # Print summary
 echo ""
