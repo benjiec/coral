@@ -7,7 +7,7 @@ from coral.ncbi.taxonomy import fetch_and_append_taxonomy
 from coral.interpro.exec import run_interproscan
 from coral.interpro.output import add_header_to_tsv, add_accession_column, add_missing_sequences
 
-OUTPUTS_DIR = 'outputs'
+OUTPUTS_DIR = 'data/outputs'
 INTERPRO_OUTPUTS = 'interpro_outputs'
 TAXONOMY_TSV = os.path.join(OUTPUTS_DIR, 'taxonomy.tsv')
 
