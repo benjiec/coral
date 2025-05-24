@@ -1,28 +1,28 @@
-Order	Class	Family	Species	Accession
-Scleractinia	Anthozoa	Caryophylliidae	Desmophyllum pertusum	GCA_029204205.1
-Scleractinia	Anthozoa	Acroporidae	Acropora cervicornis	GCA_032359415.1
-Actiniaria	Anthozoa	Actinostolidae	Actinostola sp. cb2023	GCA_033675265.1
-Zoantharia	Anthozoa	Sphenopidae	Palythoa mizigama	GCA_042846405.1
-Scleractinia	Anthozoa	Caryophylliidae	Fimbriaphyllia ancora	GCA_042850425.1
-Zoantharia	Anthozoa	Sphenopidae	Palythoa umbrosa	GCA_042854165.1
-Malacalcyonacea	Anthozoa	Plexauridae	Paramuricea clavata	GCA_902702795.2
-Scleractinia	Anthozoa	Poritidae	Porites evermanni	GCA_942486025.1
-Scleractinia	Anthozoa	Poritidae	Porites lobata	GCA_942486035.1
-Scleractinia	Anthozoa	Pocilloporidae	Pocillopora meandrina	GCA_942486045.1
-Actiniaria	Anthozoa	Edwardsiidae	Nematostella vectensis	GCF_000209225.1
-Scleractinia	Anthozoa	Acroporidae	Acropora digitifera	GCF_000222465.1
-Actiniaria	Anthozoa	Aiptasiidae	Exaiptasia diaphana	GCF_001417965.1
-Scleractinia	Anthozoa	Merulinidae	Orbicella faveolata	GCF_002042975.1
-Scleractinia	Anthozoa	Pocilloporidae	Stylophora pistillata	GCF_002571385.2
-Scleractinia	Anthozoa	Pocilloporidae	Pocillopora damicornis	GCF_003704095.1
-Scleractinia	Anthozoa	Acroporidae	Acropora millepora	GCF_004143615.1
-Malacalcyonacea	Anthozoa	Nephtheidae	Dendronephthya gigantea	GCF_004324835.1
-Actiniaria	Anthozoa	Actiniidae	Actinia tenebrosa	GCF_009602425.1
-Scleractinia	Anthozoa	Acroporidae	Acropora millepora	GCF_013753865.1
-Malacalcyonacea	Anthozoa	Xeniidae	Xenia sp. Carnegie-2017	GCF_021976095.1
-Scleractinia	Anthozoa	Pocilloporidae	Pocillopora verrucosa	GCF_030620025.1
-Scleractinia	Anthozoa	Acroporidae	Acropora muricata	GCF_036669905.1
-Scleractinia	Anthozoa	Pocilloporidae	Pocillopora verrucosa	GCF_036669915.1
-Scleractinia	Anthozoa	Acroporidae	Montipora capricornis	GCF_036669925.1
-Scleractinia	Anthozoa	Acroporidae	Montipora foliosa	GCF_036669935.1
-Actiniaria	Anthozoa	Edwardsiidae	Nematostella vectensis	GCF_932526225.1
+Order	Class	Family	Genus	Species	Accession	TaxID
+Scleractinia	Anthozoa	Caryophylliidae	Desmophyllum	Desmophyllum pertusum	GCA_029204205.1	174260
+Scleractinia	Anthozoa	Acroporidae	Acropora	Acropora cervicornis	GCA_032359415.1	6130
+Actiniaria	Anthozoa	Actinostolidae	Actinostola	Actinostola sp. cb2023	GCA_033675265.1	3060491
+Zoantharia	Anthozoa	Sphenopidae	Palythoa	Palythoa mizigama	GCA_042846405.1	1565478
+Zoantharia	Anthozoa	Sphenopidae	Palythoa	Palythoa umbrosa	GCA_042854165.1	1565477
+Malacalcyonacea	Anthozoa	Plexauridae	Paramuricea	Paramuricea clavata	GCA_902702795.2	317549
+Scleractinia	Anthozoa	Poritidae	Porites	Porites evermanni	GCA_942486025.1	104178
+Scleractinia	Anthozoa	Poritidae	Porites	Porites lobata	GCA_942486035.1	104759
+Scleractinia	Anthozoa	Pocilloporidae	Pocillopora	Pocillopora meandrina	GCA_942486045.1	46732
+Actiniaria	Anthozoa	Edwardsiidae	Nematostella	Nematostella vectensis	GCF_000209225.1	45351
+Scleractinia	Anthozoa	Acroporidae	Acropora	Acropora digitifera	GCF_000222465.1	70779
+Actiniaria	Anthozoa	Aiptasiidae	Exaiptasia	Exaiptasia diaphana	GCF_001417965.1	2652724
+Scleractinia	Anthozoa	Merulinidae	Orbicella	Orbicella faveolata	GCF_002042975.1	48498
+Scleractinia	Anthozoa	Pocilloporidae	Stylophora	Stylophora pistillata	GCF_002571385.2	50429
+Scleractinia	Anthozoa	Pocilloporidae	Pocillopora	Pocillopora damicornis	GCF_003704095.1	46731
+Scleractinia	Anthozoa	Acroporidae	Acropora	Acropora millepora	GCF_004143615.1	45264
+Malacalcyonacea	Anthozoa	Nephtheidae	Dendronephthya	Dendronephthya gigantea	GCF_004324835.1	151771
+Actiniaria	Anthozoa	Actiniidae	Actinia	Actinia tenebrosa	GCF_009602425.1	6105
+Scleractinia	Anthozoa	Acroporidae	Acropora	Acropora millepora	GCF_013753865.1	45264
+Malacalcyonacea	Anthozoa	Xeniidae	Xenia	Xenia sp. Carnegie-2017	GCF_021976095.1	2897299
+Scleractinia	Anthozoa	Pocilloporidae	Pocillopora	Pocillopora verrucosa	GCF_030620025.1	203993
+Scleractinia	Anthozoa	Acroporidae	Acropora	Acropora muricata	GCF_036669905.1	159855
+Scleractinia	Anthozoa	Pocilloporidae	Pocillopora	Pocillopora verrucosa	GCF_036669915.1	203993
+Scleractinia	Anthozoa	Acroporidae	Montipora	Montipora capricornis	GCF_036669925.1	246305
+Scleractinia	Anthozoa	Acroporidae	Montipora	Montipora foliosa	GCF_036669935.1	591990
+Actiniaria	Anthozoa	Edwardsiidae	Nematostella	Nematostella vectensis	GCF_932526225.1	45351
+Scleractinia	Anthozoa	Poritidae	Porites	Porites lutea	GCF_958299795.1	51062
